@@ -1,0 +1,54 @@
+paths:
+  raw_data: data/train.csv
+  processed_data: data/processed.parquet
+  models_dir: models
+  reports_dir: reports
+
+data:
+  date_col: date
+  target_col: sales
+  group_cols: [store, item]
+  train_end: "2016-12-31"
+  val_end: "2017-06-30"
+  test_end: "2017-12-31"
+
+features:
+  lags: [1, 7, 14, 28]
+  rolling_windows: [7, 14, 30]
+  use_target_encoding: true
+
+model:
+  point:
+    objective: regression_l1
+    metric: mae
+    learning_rate: 0.05
+    num_leaves: 127
+    min_data_in_leaf: 50
+    feature_fraction: 0.9
+    bagging_fraction: 0.9
+    bagging_freq: 5
+    lambda_l2: 0.1
+    num_boost_round: 1500
+    early_stopping_rounds: 100
+  quantile:
+    quantiles: [0.1, 0.5, 0.9]
+    learning_rate: 0.05
+    num_leaves: 127
+    min_data_in_leaf: 50
+    feature_fraction: 0.9
+    num_boost_round: 1500
+    early_stopping_rounds: 100
+  conformal:
+    alpha: 0.1  # 90% coverage
+
+baselines:
+  seasonal_length: 7
+  run_ets: false  # expensive; enable when you have time
+
+newsvendor:
+  unit_cost: 1.0
+  unit_price: 3.0
+  holding_cost: 0.2
+  stockout_penalty: 1.5
+
+random_seed: 42
